@@ -56,7 +56,6 @@ class Skaydis_colors
 							convert_rgb(&color);
 							break;
 						}
-						std::cout<<color.at(1)<<std::endl;
 					}
 				}
 			       	makeGradient(gay.first, *(gay.second));	
@@ -69,7 +68,6 @@ class Skaydis_colors
 			for(int i=0; i<3; i++) {
 				color_RGB->at(i)=color_RGB->at(i)/255.;
 			}
-			std::cout<<color_RGB->at(1) <<std::endl;;
 			return;
 		}
 
