@@ -15,32 +15,61 @@ class Skaydis_colors
 {
    	public:
 		Skaydis_colors(){
+			this->Flags_rgb=ConvertFlags();
 			MakeGradients();
 		}
 		
 		~Skaydis_colors(){};
+		enum LABEL
+		{
+			enby = 1,
+			trans = 2,
+			lesbian = 3,
+			bi = 4 //please feel free to expand
+		};
 		
+		std::map<LABEL, std::vector<std::array<float, 3> >* > ConvertFlags()
+		{
+			std::map<LABEL, std::vector<std::array<float, 3> >* > convertedFlag;	
+			for(auto gay:this->Flags)
+			{
+				for(int i=0; i<(int)gay.second->size(); i++)
+				{
+					std::array<float, 3>* color = &(gay.second->at(i));
+					convert_rgb(color);
+				}
+				convertedFlag[gay.first]=gay.second;
+			}
+			return convertedFlag;
+		}
+
 		void MakeGradients()
 		{
 			//turn the colors into the gradients that are stored in the ints
-			for(auto gay:this->Flags){
-				for(auto color:gay.second)
+			for(auto gay:this->Flags_rgb){
+
+				for(int i=0; i<(int)gay.second->size(); i++)
 				{
+					std::array<float, 3> color = gay.second->at(i);
 					for(auto rgb:color){
 						if(rgb > 1){
 							convert_rgb(&color);
 							break;
 						}
+						std::cout<<color.at(1)<<std::endl;
 					}
 				}
-			       	makeGradient(gay.first, gay.second);	
+			       	makeGradient(gay.first, *(gay.second));	
 			}
 			return;	
 		}
 		
 		void convert_rgb(std::array<float, 3>* color_RGB)
 		{
-			for(int i=0; i<3; i++) color_RGB->at(i)=color_RGB->at(i)/255.;
+			for(int i=0; i<3; i++) {
+				color_RGB->at(i)=color_RGB->at(i)/255.;
+			}
+			std::cout<<color_RGB->at(1) <<std::endl;;
 			return;
 		}
 
@@ -57,10 +86,10 @@ class Skaydis_colors
 				Double_t Blue[2] = 	{ colors.at(0).at(2), colors.at(1).at(2)};
 				if(label == LABEL::trans) 
 				{
-					Trans_gradient = TColor::CreateColorGradientTable(2, stops_two, Red, Green, Blue, 100);
+					Trans_gradient = TColor::CreateGradientColorTable(2, stops_two, Red, Green, Blue, 100);
 					for(int i=0; i<100; i++) Trans_gradient_PT[i]=i+Trans_gradient;
 
-					Trans_log_gradient = TColor::CreateColorGradientTable(2, stops_two, Red, Green, Blue, 100);
+					Trans_log_gradient = TColor::CreateGradientColorTable(2, stops_two, Red, Green, Blue, 100);
 					for(int i=0; i<100; i++) Trans_log_gradient_PT[i]=i+Trans_log_gradient;
 				}
 			}
@@ -72,19 +101,19 @@ class Skaydis_colors
 				
 				if(label == LABEL::enby) 
 				{
-					Enby_gradient = TColor::CreateColorGradientTable(3, stops_three_lin, Red, Green, Blue, 100);
+					Enby_gradient = TColor::CreateGradientColorTable(3, stops_three_lin, Red, Green, Blue, 100);
 					for(int i=0; i<100; i++) Enby_gradient_PT[i]=i+Enby_gradient;
 
-					Enby_log_gradient = TColor::CreateColorGradientTable(3, stops_three_log, Red, Green, Blue, 100);
+					Enby_log_gradient = TColor::CreateGradientColorTable(3, stops_three_log, Red, Green, Blue, 100);
 					for(int i=0; i<100; i++) Enby_log_gradient_PT[i]=i+Enby_log_gradient;
 				}
 						
 				else if(label == LABEL::bi) 
 				{
-					Bi_gradient = TColor::CreateColorGradientTable(3, stops_three_lin, Red, Green, Blue, 100);
+					Bi_gradient = TColor::CreateGradientColorTable(3, stops_three_lin, Red, Green, Blue, 100);
 					for(int i=0; i<100; i++) Bi_gradient_PT[i]=i+Bi_gradient;
 
-					Bi_log_gradient = TColor::CreateColorGradientTable(3, stops_three_log, Red, Green, Blue, 100);
+					Bi_log_gradient = TColor::CreateGradientColorTable(3, stops_three_log, Red, Green, Blue, 100);
 					for(int i=0; i<100; i++) Bi_log_gradient_PT[i]=i+Bi_log_gradient;
 				}
 			}
@@ -100,10 +129,10 @@ class Skaydis_colors
 			       				  colors.at(3).at(2), colors.at(4).at(2), colors.at(5).at(2)};
 				if(label == LABEL::lesbian) 
 				{
-					Lesbian_gradient = TColor::CreateColorGradientTable(6, stops_six_lin, Red, Green, Blue, 100);
+					Lesbian_gradient = TColor::CreateGradientColorTable(6, stops_six_lin, Red, Green, Blue, 100);
 					for(int i=0; i<100; i++) Lesbian_gradient_PT[i]=i+Lesbian_gradient;
 
-					Lesbian_log_gradient = TColor::CreateColorGradientTable(6, stops_six_log, Red, Green, Blue, 100);
+					Lesbian_log_gradient = TColor::CreateGradientColorTable(6, stops_six_log, Red, Green, Blue, 100);
 					for(int i=0; i<100; i++) Lesbian_log_gradient_PT[i]=i+Lesbian_log_gradient;
 				}
 			}
@@ -114,9 +143,15 @@ class Skaydis_colors
 		std::array<float, 3> enby_yellow 		{252., 244., 52.};
 		std::array<float, 3> enby_purple 		{156., 89., 209.};
 
+		std::vector<std::array<float, 3>>* enby_Flag = 
+			new std::vector<std::array<float, 3>> {enby_yellow, enby_purple, {0., 0., 0.}};
+
 		std::array<float, 3> trans_blue 		{0., 202., 250.};
 		std::array<float, 3> trans_pink 		{239., 60., 235.};
-		
+	
+		std::vector<std::array<float, 3>>* trans_Flag =
+			new std::vector<std::array<float, 3>> {trans_blue, trans_pink};
+
 		std::array<float, 3> lesbian_deep_orange	{213., 45., 0.};
 		std::array<float, 3> lesbian_mid_orange		{239., 118., 39.};
 		std::array<float, 3> lesbian_light_orange	{255., 154., 86.};
@@ -124,10 +159,18 @@ class Skaydis_colors
 		std::array<float, 3> lesbian_mid_pink		{181., 86., 144.};
 		std::array<float, 3> lesbian_deep_pink		{162., 2., 98.};
 		
+		std::vector<std::array<float, 3>>* lesbian_Flag = 
+			new std::vector<std::array<float, 3>> 
+				{lesbian_deep_orange, lesbian_mid_orange, lesbian_light_orange, 
+					lesbian_light_pink, lesbian_mid_pink, lesbian_deep_pink}; 
+
 		std::array<float, 3> bi_blue 			{0., 56., 168.};
 		std::array<float, 3> bi_purple			{155., 79., 150.};
 		std::array<float, 3> bi_pink 			{214., 2., 112.};
-
+		
+		std::vector<std::array<float, 3>>* bi_Flag = 
+			new std::vector<std::array<float, 3>> { bi_blue, bi_purple, bi_pink};
+		
 		Int_t Enby_gradient, 	Enby_log_gradient;
 		Int_t Trans_gradient, 	Trans_log_gradient;
 		Int_t Lesbian_gradient, Lesbian_log_gradient;
@@ -148,23 +191,19 @@ class Skaydis_colors
 		Double_t stops_four_log[4] = 	{0, 0.5, 0.75, 1.};
 	
 		Double_t stops_two[2] 	=	{0., 1.};
-
-		std::map<LABEL, std::vector<std::array<float, 3>> Flags
-		{
-			{LABEL::enby, 		std::vector<std::array<float, 3>> {enby_yellow, enby_purple, {0., 0., 0.}}},
-			{LABEL::trans, 		std::vector<std::array<float, 3>> {trans_blue, trans_pink}},
-		       	{LABEL::lesbian, 	std::vector<std::array<float, 3>> 
-				{lesbian_deep_orange, lesbian_mid_orange, lesbian_light_orange, 
-					lesbian_light_pink, lesbian_mid_pink, lesbian_deep_pink}},
-			{LABEL::bi, 		std::vector<std::array<float, 3>> {bi_blue, bi_purple, bi_pink}}
-		};
 		
-		enum LABEL
+
+		std::map<LABEL, std::vector<std::array<float, 3> >* > Flags = 
+//			new std::map<LABEL, std::vector<std::array<float, 3> >* >
 		{
-			enby = 1;
-			trans = 2;
-			lesbian = 3;
-			bi = 4; //please feel free to expand
+			{LABEL::enby, 		enby_Flag},//std::vector<std::array<float, 3>> {enby_yellow, enby_purple, {0., 0., 0.}}},
+			{LABEL::trans, 		trans_Flag }, //std::vector<std::array<float, 3>> {trans_blue, trans_pink}},
+		       	{LABEL::lesbian, 	lesbian_Flag},//std::vector<std::array<float, 3>> 
+				//{lesbian_deep_orange, lesbian_mid_orange, lesbian_light_orange, 
+				//	lesbian_light_pink, lesbian_mid_pink, lesbian_deep_pink}},
+			{LABEL::bi,		bi_Flag}
+//			{LABEL::bi, 		std::vector<std::array<float, 3>> {bi_blue, bi_purple, bi_pink}}
 		};
+		std::map<LABEL, std::vector<std::array<float, 3> >* > Flags_rgb {}; 		
 };
 #endif
